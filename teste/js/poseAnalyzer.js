@@ -1,8 +1,11 @@
 const ANALYSIS_PREFIX = 'analysis_';
+const ANALYSIS_VERSION = 2;
 const POSE_BASE_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/';
 const MIN_LANDMARK_VISIBILITY = 0.5;
 const MAX_SAMPLED_FRAMES = 24;
 const MIN_SAMPLED_FRAMES = 8;
+const MIN_PHASE_FRAME_RATIO = 0.15;
+const MIN_EXTENSION_ANGLE_MARGIN = 45;
 const MEDIA_EVENT_TIMEOUT_MS = 12000;
 const POSE_FRAME_TIMEOUT_MS = 20000;
 const analysisRequests = new Map();
@@ -159,13 +162,21 @@ function sendPoseFrame(pose, video) {
   });
 }
 
-function angleAtJoint(first, center, last) {
-  const firstVector = { x: first.x - center.x, y: first.y - center.y };
-  const lastVector = { x: last.x - center.x, y: last.y - center.y };
-  const lengths = Math.hypot(firstVector.x, firstVector.y) * Math.hypot(lastVector.x, lastVector.y);
-  if (!lengths) return null;
-  const cosine = (firstVector.x * lastVector.x + firstVector.y * lastVector.y) / lengths;
-  return Math.acos(Math.max(-1, Math.min(1, cosine))) * 180 / Math.PI;
+function calculateAngle(pointA, pointB, pointC) {
+  if (![pointA, pointB, pointC].every((point) => (
+    point
+    && Number.isFinite(point.x)
+    && Number.isFinite(point.y)
+  ))) return null;
+
+  const vectorA = { x: pointA.x - pointB.x, y: pointA.y - pointB.y };
+  const vectorC = { x: pointC.x - pointB.x, y: pointC.y - pointB.y };
+  if (!Math.hypot(vectorA.x, vectorA.y) || !Math.hypot(vectorC.x, vectorC.y)) return null;
+
+  const radians = Math.atan2(vectorC.y, vectorC.x) - Math.atan2(vectorA.y, vectorA.x);
+  let angle = Math.abs((radians * 180) / Math.PI);
+  if (angle > 180) angle = 360 - angle;
+  return angle;
 }
 
 function getFrameAngle(landmarks, standard) {
@@ -177,7 +188,7 @@ function getFrameAngle(landmarks, standard) {
       || !Number.isFinite(Number(point.visibility))
       || Number(point.visibility) < MIN_LANDMARK_VISIBILITY
     ))) continue;
-    const angle = angleAtJoint(...points);
+    const angle = calculateAngle(...points);
     const confidence = points.reduce((sum, point) => sum + Number(point.visibility), 0) / points.length;
     if (Number.isFinite(angle) && (!best || confidence > best.confidence)) best = { angle, confidence };
   }
@@ -225,7 +236,7 @@ async function sampleVideoFrames(file, exerciseId, requestId, standard) {
     if (angles.length < requiredFrames) {
       throw new Error('Não foi possível identificar as articulações com confiança. Posicione a câmera de lado, mantenha o corpo inteiro visível e grave com boa iluminação.');
     }
-    return Math.min(...angles);
+    return angles;
   } finally {
     video.pause();
     video.removeAttribute('src');
@@ -253,7 +264,8 @@ export function getSavedAnalysis(exerciseId, date) {
   try {
     const analysis = JSON.parse(raw);
     if (
-      analysis?.exerciseId !== exerciseId
+      analysis?.version !== ANALYSIS_VERSION
+      || analysis?.exerciseId !== exerciseId
       || analysis.timestamp !== date
       || typeof analysis.isCorrect !== 'boolean'
       || typeof analysis.feedbackHTML !== 'string'
@@ -298,7 +310,8 @@ export function getDailyExtraKcal(date) {
     try {
       const analysis = JSON.parse(raw);
       if (
-        analysis.timestamp === date
+        analysis.version === ANALYSIS_VERSION
+        && analysis.timestamp === date
         && typeof analysis.exerciseId === 'string'
         && key === analysisKey(analysis.exerciseId, date)
         && Number.isFinite(Number(analysis.extraKcal))
@@ -311,15 +324,23 @@ export function getDailyExtraKcal(date) {
   return total;
 }
 
-function createFeedback(standard, minAngle, exerciseId, exerciseName, date) {
-  const isCorrect = minAngle <= standard.minAcceptableAngle;
+function createFeedback(standard, angles, exerciseId, exerciseName, date) {
+  const minAngle = Math.min(...angles);
+  const maxAngle = Math.max(...angles);
+  const requiredPhaseFrames = Math.max(2, Math.ceil(angles.length * MIN_PHASE_FRAME_RATIO));
+  const extensionAngle = standard.targetAngle + MIN_EXTENSION_ANGLE_MARGIN;
+  const flexedFrames = angles.filter((angle) => angle <= standard.minAcceptableAngle).length;
+  const extendedFrames = angles.filter((angle) => angle >= extensionAngle).length;
+  const isCorrect = flexedFrames >= requiredPhaseFrames && extendedFrames >= requiredPhaseFrames;
   const statusText = isCorrect ? '🟢 AMPLITUDE DENTRO DA REFERÊNCIA' : '🟡 AMPLITUDE A REVISAR';
   const advice = isCorrect ? standard.adviceCorrect : standard.adviceIncorrect;
-  const feedbackHTML = `<article class="analysis-feedback ${isCorrect ? 'correct' : 'needs-work'}"><h4>${statusText}</h4><p><strong>${escapeHTML(exerciseName)}</strong></p><p>Menor ângulo observado: <strong>${minAngle.toFixed(0)}°</strong> (referência aproximada: ${standard.targetAngle}°).</p><p>${escapeHTML(advice)}</p><p class="analysis-disclaimer">Estimativa de amplitude 2D; não confirma a execução completa, não estima calorias e não substitui orientação profissional.</p></article>`;
+  const feedbackHTML = `<article class="analysis-feedback ${isCorrect ? 'correct' : 'needs-work'}"><h4>${statusText}</h4><p><strong>${escapeHTML(exerciseName)}</strong></p><p>Amplitude observada: <strong>${minAngle.toFixed(0)}°–${maxAngle.toFixed(0)}°</strong> (flexão de referência: até ${standard.minAcceptableAngle}°; extensão aproximada: ${extensionAngle}° ou mais).</p><p>${escapeHTML(advice)}</p><p class="analysis-disclaimer">Estimativa de amplitude 2D; não confirma a execução completa, não estima calorias e não substitui orientação profissional.</p></article>`;
   return {
+    version: ANALYSIS_VERSION,
     exerciseId,
     isCorrect,
     minAngle,
+    maxAngle,
     extraKcal: 0,
     statusText,
     feedbackHTML,
@@ -338,12 +359,12 @@ export async function analyzeExerciseVideo(file, exercise) {
     throw new Error(`Não há parâmetros de análise cadastrados para “${exercise.name}”. Confira data/exercicios.json.`);
   }
 
-  const minAngle = await analyzeInQueue(file, exercise, standard, requestId);
+  const angles = await analyzeInQueue(file, exercise, standard, requestId);
   if (analysisRequests.get(exercise.id) !== requestId) {
     throw new Error('A análise foi cancelada porque o vídeo deste exercício foi removido ou substituído.');
   }
   const date = new Date().toISOString().slice(0, 10);
-  const analysis = createFeedback(standard, minAngle, exercise.id, exercise.name, date);
+  const analysis = createFeedback(standard, angles, exercise.id, exercise.name, date);
   localStorage.setItem(analysisKey(exercise.id, date), JSON.stringify(analysis));
   return analysis;
 }

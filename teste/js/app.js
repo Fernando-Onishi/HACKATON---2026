@@ -128,19 +128,19 @@ async function save() {
   syncFailed = false;
   lastSaveError = null;
   const syncStatus = document.getElementById('syncStatus');
-  if (syncStatus) syncStatus.innerHTML = '<i></i> Sincronizando com Firebase...';
+  if (syncStatus) syncStatus.innerHTML = '<i></i> Salvando...';
   const { authSession, isAuthenticated, authMode, ...userState } = state;
   cacheUserState(user.uid, userState);
   try { localStorage.setItem(pendingStateKey(user.uid), JSON.stringify(userState)); } catch { /* Keep the Firebase write as the source of truth. */ }
   try {
     await firebaseDataApi.saveUserState(user.uid, userState);
     clearPendingState(user.uid);
-    if (syncStatus) syncStatus.innerHTML = '<i></i> Dados sincronizados com Firebase';
+    if (syncStatus) syncStatus.innerHTML = '<i></i> Atualizado';
     return true;
   } catch (error) {
     syncFailed = true;
     lastSaveError = error;
-    if (syncStatus) syncStatus.innerHTML = '<i></i> Falha ao sincronizar';
+    if (syncStatus) syncStatus.innerHTML = '<i></i> Falha ao salvar';
     console.error('Firebase state save failed:', error);
     return false;
   }
@@ -256,22 +256,22 @@ function setAuthFeedback(message) {
 function authErrorMessage(error) {
   const messages = {
     'auth/email-already-in-use': 'Este e-mail já possui uma conta. Entre em vez de criar outra.',
-    'auth/invalid-credential': 'E-mail ou senha incorretos. Contas antigas que existiam só neste navegador precisam ser cadastradas no Firebase.',
-    'auth/invalid-login-credentials': 'E-mail ou senha incorretos. Contas antigas que existiam só neste navegador precisam ser cadastradas no Firebase.',
+    'auth/invalid-credential': 'E-mail ou senha incorretos. Contas antigas que existiam só neste navegador precisam ser cadastradas novamente.',
+    'auth/invalid-login-credentials': 'E-mail ou senha incorretos. Contas antigas que existiam só neste navegador precisam ser cadastradas novamente.',
     'auth/user-not-found': 'Não existe uma conta com esse e-mail.',
     'auth/wrong-password': 'E-mail ou senha incorretos.',
     'auth/invalid-email': 'Informe um endereço de e-mail válido.',
     'auth/weak-password': 'A senha precisa ter pelo menos 6 caracteres.',
-    'auth/operation-not-allowed': 'Ative o provedor E-mail/senha em Authentication no Firebase Console.',
-    'auth/invalid-api-key': 'A chave da API Firebase é inválida. Confira a configuração do app Web no Firebase Console.',
-    'auth/configuration-not-found': 'A configuração de autenticação não foi encontrada neste projeto Firebase.',
+    'auth/operation-not-allowed': 'O acesso por e-mail e senha não está habilitado para este aplicativo.',
+    'auth/invalid-api-key': 'A configuração do serviço de autenticação é inválida.',
+    'auth/configuration-not-found': 'A configuração do serviço de autenticação não foi encontrada.',
     'auth/too-many-requests': 'Muitas tentativas. Aguarde um pouco e tente novamente.',
     'auth/network-request-failed': 'Falha de conexão. Verifique a internet e tente novamente.',
-    'auth/unauthorized-domain': 'Este domínio ainda não está autorizado em Authentication > Settings no Firebase Console.',
-    'permission-denied': 'O Firestore recusou o acesso. Confira as regras de segurança para users/{uid}.',
-    'not-found': 'O banco Cloud Firestore não foi encontrado. Crie o banco no Firebase Console.',
-    'failed-precondition': 'O Cloud Firestore não está pronto. Crie o banco e confira a configuração do projeto.',
-    'unavailable': 'O Firebase está indisponível. Verifique a conexão e tente novamente.',
+    'auth/unauthorized-domain': 'Este domínio ainda não está autorizado no serviço de autenticação.',
+    'permission-denied': 'O armazenamento remoto recusou o acesso. Verifique as permissões da conta.',
+    'not-found': 'O armazenamento remoto não foi encontrado. Verifique a configuração do serviço.',
+    'failed-precondition': 'O armazenamento remoto não está pronto. Verifique a configuração do serviço.',
+    'unavailable': 'O serviço remoto está indisponível. Verifique a conexão e tente novamente.',
     'unauthenticated': 'A sessão expirou. Entre novamente na sua conta.'
   };
   return messages[error.code] || error.message || 'Não foi possível autenticar.';
@@ -327,7 +327,7 @@ function updateShell(active) {
   if (weeklyCount) weeklyCount.innerHTML = `${checkins.length} <small>/ 7 dias</small>`;
   if (weeklyProgress) weeklyProgress.style.width = `${Math.min(100, checkins.length / 7 * 100)}%`;
   if (weeklyPrompt) weeklyPrompt.textContent = checkins.length < 7 ? `${checkins.length} de 7 check-ins nesta semana.` : 'Semana completa. Preserve espaço para recuperação.';
-  if (syncStatus) syncStatus.innerHTML = syncFailed ? '<i></i> Falha ao sincronizar' : '<i></i> Dados sincronizados com Firebase';
+  if (syncStatus) syncStatus.innerHTML = syncFailed ? '<i></i> Falha ao salvar' : '<i></i> Conta ativa';
 }
 
 function renderAuthScreen() {
@@ -479,7 +479,7 @@ function profileOptions(options, selectedValue) {
 function renderProfile() {
   const profile = state.profile;
   return `<div class="page-intro"><div><span class="eyebrow">SEU PONTO DE PARTIDA</span><h2>Perfil e metas</h2><p>Suas respostas orientam os planos e a biblioteca do coach.</p></div></div>
-    <section class="profile-summary"><span class="avatar">${escapeHTML((profile.name || 'A').charAt(0).toUpperCase())}</span><div><h2>${escapeHTML(profile.name || 'Atleta Fat Fit')}</h2><p>Perfil e preferências sincronizados com Firebase</p></div></section>
+    <section class="profile-summary"><span class="avatar">${escapeHTML((profile.name || 'A').charAt(0).toUpperCase())}</span><div><h2>${escapeHTML(profile.name || 'Atleta Fat Fit')}</h2><p>Preferências da sua conta</p></div></section>
     <section class="panel form-panel"><div class="panel-head"><div><h3>Dados, rotina e objetivos</h3><p>A meta calórica é uma estimativa geral calculada com suas respostas.</p></div></div>
       <form id="profileForm" class="form-grid two">
         <div class="field"><label for="profileName">Nome</label><input id="profileName" name="name" value="${escapeHTML(profile.name)}" maxlength="50" required></div>
@@ -493,7 +493,7 @@ function renderProfile() {
         <div class="field"><label for="profileActivity">Atividade diária</label><select id="profileActivity" name="activityLevel">${profileOptions([['sedentário', 'Mais sentado(a)'], ['leve', 'Leve'], ['moderado', 'Moderada'], ['alto', 'Alta']], profile.activityLevel || 'leve')}</select></div>
         <div class="field"><label for="profileTrainingDays">Dias de treino por semana</label><select id="profileTrainingDays" name="trainingDays">${profileOptions([['2', '2 dias'], ['3', '3 dias'], ['4', '4 dias'], ['5', '5 dias']], String(profile.trainingDays || 3))}</select></div>
         <div class="field"><label for="profileFoodStyle">Preferência alimentar</label><select id="profileFoodStyle" name="foodStyle">${profileOptions([['omnívoro', 'Como de tudo'], ['vegetariano', 'Vegetariana'], ['vegano', 'Vegana']], profile.foodStyle || 'omnívoro')}</select></div>
-        <div class="field"><label for="profileSchedule">Horário mais viável</label><select id="profileSchedule" name="schedule">${profileOptions(['Manhã', 'Horário de almoço', 'Fim de tarde', 'Noite', 'Varia a cada dia'].map((item) => [item, item]), profile.schedule || 'Manhã')}</select></div>
+        <div class="field"><label for="profileSchedule">Horário mais viável para Treino</label><select id="profileSchedule" name="schedule">${profileOptions(['Manhã', 'Horário de almoço', 'Fim de tarde', 'Noite', 'Varia a cada dia'].map((item) => [item, item]), profile.schedule || 'Manhã')}</select></div>
         <div class="field"><label for="profileSupport">Rede de apoio</label><select id="profileSupport" name="support">${profileOptions([['em casa', 'Pessoas de casa'], ['amigos', 'Amigos ou colegas'], ['profissional', 'Profissional ou treinador'], ['por conta própria', 'Estou começando por conta própria']], profile.support || 'em casa')}</select></div>
         <div class="field"><label for="profileMotivation">Motivação principal</label><input id="profileMotivation" name="motivation" value="${escapeHTML(profile.motivation || '')}" maxlength="80"></div>
         <div class="field"><label for="profileProgressMeasure">Como medir progresso?</label><input id="profileProgressMeasure" name="progressMeasure" value="${escapeHTML(profile.progressMeasure || '')}" maxlength="80"></div>
@@ -1231,7 +1231,7 @@ viewRoot.addEventListener('click', async (event) => {
     return;
   }
   if (action.dataset.action === 'delete-account') {
-    if (!confirm('Excluir sua conta Firebase e todos os dados associados?')) return;
+    if (!confirm('Excluir sua conta e todos os dados associados?')) return;
     const user = auth?.currentUser;
     if (!user) return;
     try {

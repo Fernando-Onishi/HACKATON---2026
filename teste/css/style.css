@@ -1,4 +1,5 @@
 :root {
+  font-size: 18px;
   color-scheme: dark;
   --bg-primary: #121318;
   --bg-surface: #1a1b23;
@@ -26,7 +27,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background-color: var(--bg-primary); color: var(--text-main); font: 15px/1.5 var(--body); }
+body { margin: 0; background-color: var(--bg-primary); color: var(--text-main); font: 16px/1.5 var(--body); }
 button, input, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
@@ -34,6 +35,7 @@ button { color: inherit; }
 .app-shell { min-height: 100vh; }
 .sidebar { background: #101014; border-right: 1px solid var(--line); display: flex; flex-direction: column; height: 100vh; left: 0; padding: 31px 19px 20px; position: fixed; top: 0; width: 244px; z-index: 5; }
 .brand { align-items: center; display: flex; font: 800 18px/1 var(--heading); gap: 11px; letter-spacing: 0; }
+.brand-image { display: block; flex: 0 0 42px; height: 38px; object-fit: contain; width: 42px; }
 .brand-mark { align-items: center; background: transparent; border-radius: 4px; display: flex; flex: 0 0 52px; height: 48px; justify-content: center; overflow: hidden; width: 52px; }
 .brand-mark img { display: block; height: 59px; max-width: none; object-fit: cover; width: 70px; }
 .brand-mark img.remote-logo-fallback, .brand-mark-large img.remote-logo-fallback { filter: invert(1) hue-rotate(180deg) contrast(3); mix-blend-mode: screen; }
@@ -823,3 +825,19 @@ body.auth-mode .app-shell {
   .plan-summary-box { align-items: flex-start; flex-direction: column; gap: 8px; }
   .chat-form { flex-direction: column; }
 }
+
+body { font-size: 16px; }
+p, span:not(.nav-icon):not(.metric-icon):not(.avatar), li, td, label, small {
+  font-size: 16px !important;
+}
+h1 { font-size: 2rem !important; }
+h2 { font-size: 1.6rem !important; }
+h3 { font-size: 1.3rem !important; }
+.hero h2 { font-size: clamp(2.2rem, 3vw, 3rem) !important; }
+.brand span { font-size: inherit !important; }
+button, input, select, textarea {
+  font-size: 16px !important;
+  font-weight: 600;
+}
+button:not(.icon-button) { min-height: 44px; padding-block: 10px; }
+input, select, textarea { padding: 10px 12px; }
