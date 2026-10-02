@@ -21,14 +21,18 @@ function applyTheme(theme) {
   const nextTheme = validThemes.has(theme) ? theme : 'dark';
   document.documentElement.dataset.theme = nextTheme;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', nextTheme === 'light' ? '#f4f5f8' : '#121318');
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) {
+  document.querySelectorAll('[data-action="toggle-theme"]').forEach((toggle) => {
     const isLight = nextTheme === 'light';
     toggle.setAttribute('aria-label', `Ativar modo ${isLight ? 'escuro' : 'claro'}`);
     toggle.title = `Ativar modo ${isLight ? 'escuro' : 'claro'}`;
-    toggle.querySelector('.theme-toggle-icon').textContent = isLight ? '🌙' : '☀️';
-    toggle.querySelector('.theme-toggle-label').textContent = `Modo ${isLight ? 'escuro' : 'claro'}`;
-  }
+    toggle.setAttribute('aria-pressed', String(isLight));
+    const icon = toggle.querySelector('.theme-toggle-icon');
+    const label = toggle.querySelector('.theme-toggle-label');
+    if (icon) icon.innerHTML = isLight
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.3A8.5 8.5 0 0 1 8.7 3.8 8.5 8.5 0 1 0 20.2 15.3Z"/></svg>'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+    if (label) label.textContent = `Modo ${isLight ? 'escuro' : 'claro'}`;
+  });
 }
 
 function toggleTheme() {
@@ -364,11 +368,11 @@ function renderAuthScreen() {
     <div class="auth-shell">
       <section class="auth-brand-panel">
         <div class="brand-wrap">
-          <span class="brand-mark-large"><img src="img/fatfit-removebg-preview.png" alt=""></span>
-          <div>
+          <div class="brand-lockup">
             <div class="brand-text">FATFIT</div>
             <small>PERFORMANCE CLUB</small>
           </div>
+          <button class="theme-toggle auth-theme-toggle" data-action="toggle-theme" type="button" aria-label="Ativar modo claro" title="Ativar modo claro"><span class="theme-toggle-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span><span class="theme-toggle-label">Modo claro</span></button>
         </div>
         <div class="auth-copy">
           <span class="eyebrow">SEU RITMO. SUA EVOLUÇÃO.</span>
@@ -573,6 +577,7 @@ function render() {
   if (!state.isAuthenticated) {
     viewRoot.innerHTML = renderAuthScreen();
     syncBrandAssetUrls();
+    applyTheme(document.documentElement.dataset.theme);
     return;
   }
 
@@ -1308,7 +1313,7 @@ document.addEventListener('click', async (event) => {
   const action = event.target.closest('[data-action="checkin"]');
   if (action && !viewRoot.contains(action)) await markCheckin();
   if (event.target.closest('#profileShortcut')) location.hash = 'perfil';
-  if (event.target.closest('#themeToggle')) toggleTheme();
+  if (event.target.closest('[data-action="toggle-theme"]')) toggleTheme();
   const routeLink = event.target.closest('[data-route]');
   if (routeLink && routeLink.tagName !== 'A' && viewRoot.contains(routeLink)) location.hash = routeLink.dataset.route;
 });
