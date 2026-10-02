@@ -3,21 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0a0a0c">
     <meta name="description" content="Fat Fit: acompanhe seus treinos, alimentacao e evolucao em um so lugar.">
     <title>Fat Fit | Seu ritmo. Sua evolução.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=workout-checkins">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/app.js?v=profile-empty-fields"></script>
 </head>
 <body>
     <div class="app-shell">
@@ -29,23 +23,24 @@
                 <a href="#treinos" data-route="treinos"><span class="nav-icon">↗</span>Treinos</a>
                 <a href="#dieta" data-route="dieta"><span class="nav-icon">◉</span>Alimentação</a>
                 <a href="#insights" data-route="insights"><span class="nav-icon">⌁</span>Insights</a>
+                <a href="#chat" data-route="chat"><span class="nav-icon">✦</span>Coach IA</a>
             </nav>
             <div class="side-bottom">
-                <div class="weekly-card"><span class="eyebrow">CHECK-IN DA SEMANA</span><strong id="weeklyCount">0 <small>/ 5 dias</small></strong><div class="mini-progress"><span id="weeklyProgress"></span></div><p id="weeklyPrompt">Seu próximo treino começa com um passo.</p><button class="text-button" data-action="checkin">+ Registrar treino de hoje</button></div>
+                <div class="weekly-card"><span class="eyebrow">CHECK-IN DA SEMANA</span><strong id="weeklyCount">0 <small>/ 7 dias</small></strong><div class="mini-progress"><span id="weeklyProgress"></span></div><p id="weeklyPrompt">Seu próximo check-in começa hoje.</p><button class="text-button" data-action="checkin">+ Registrar treino de hoje</button></div>
                 <a class="profile-link" href="#perfil" data-route="perfil"><span class="avatar" id="sideAvatar">A</span><span><strong id="sideName">Atleta Fat Fit</strong><small>Meu perfil</small></span><span class="profile-arrow">›</span></a>
             </div>
         </aside>
         <main class="main-area">
             <header class="topbar">
                 <div><span class="eyebrow" id="topEyebrow"></span><h1 id="pageTitle">Visão geral</h1></div>
-                <div class="topbar-actions"><span class="sync-status" id="syncStatus"><i></i> Dados salvos neste dispositivo</span><button class="icon-button" id="profileShortcut" aria-label="Abrir perfil" title="Abrir perfil">◎</button></div>
+                <div class="topbar-actions"><span class="sync-status" id="syncStatus"><i></i> Dados salvos neste dispositivo</span><button class="icon-button" id="profileShortcut" aria-label="Abrir perfil" title="Abrir perfil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/></svg></button></div>
             </header>
             <div class="page-content" id="viewRoot" aria-live="polite"></div>
             <footer class="app-footer"><span>FAT FIT <b>·</b> PERFORMANCE CLUB</span><span>Consistência é construída um dia por vez.</span></footer>
         </main>
     </div>
     <nav class="mobile-nav" aria-label="Navegação móvel" id="mobileNav">
-        <a href="#dashboard" data-route="dashboard"><span>◫</span>Início</a><a href="#treinos" data-route="treinos"><span>↗</span>Treinos</a><a href="#dieta" data-route="dieta"><span>◉</span>Dieta</a><a href="#insights" data-route="insights"><span>⌁</span>Insights</a><a href="#perfil" data-route="perfil"><span>◎</span>Perfil</a>
+        <a href="#dashboard" data-route="dashboard"><span>◫</span>Início</a><a href="#treinos" data-route="treinos"><span>↗</span>Treinos</a><a href="#dieta" data-route="dieta"><span>◉</span>Dieta</a><a href="#insights" data-route="insights"><span>⌁</span>Insights</a><a href="#chat" data-route="chat"><span>✦</span>Coach</a>
     </nav>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>

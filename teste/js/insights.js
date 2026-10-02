@@ -69,12 +69,12 @@ export function renderInsights(state) {
   const earned = [
     { name: 'Primeiro Treino', active: state.workouts.length > 0, icon: '⚡' },
     { name: 'Sequência 5 Dias', active: consecutiveDays >= 5, icon: '🔥' },
-    { name: 'Semana Perfeita', active: weeklyCheckins.length >= 5, icon: '🏆' }
+    { name: 'Semana Perfeita', active: consecutiveDays >= 7, icon: '🏆' }
   ];
   return `<div class="page-intro"><div><span class="eyebrow">SEUS DADOS, CONECTADOS</span><h2>Insights integrados</h2><p>Leituras automáticas de treino, alimentação e peso.</p></div><span class="tag">Atualizado agora</span></div>
     <section class="panel"><div class="panel-head"><div><h3>Volume, calorias e peso</h3><p>Últimos 7 dias · volume de treino e calorias; peso no eixo secundário</p></div></div><div class="chart-wrap"><canvas id="insightsChart" role="img" aria-label="Gráfico de volume de treino, calorias e peso nos últimos sete dias"></canvas></div></section>
     <div class="content-grid" style="margin-top:14px"><section class="panel"><div class="panel-head"><div><h3>O que seus dados mostram</h3><p>Regras explicáveis com base nos registros salvos.</p></div></div>${insights.map((item) => `<article class="insight-card"><span class="insight-symbol">${item.icon}</span><div><strong>${item.title}</strong><p>${item.text}</p></div></article>`).join('')}</section>
-    <section class="panel"><div class="panel-head"><div><h3>Conquistas</h3><p>Marcos da sua consistência</p></div><span class="tag">${earned.filter((badge) => badge.active).length}/${earned.length}</span></div><div class="badges-row">${earned.map((badge) => `<span class="badge ${badge.active ? '' : 'locked'}">${badge.icon} ${badge.name}</span>`).join('')}</div><div class="checkin-banner"><div><h3>Check-in adaptativo</h3><p>${recentCheckins.length < 3 ? 'Sua adesão recente está começando. Um objetivo de 2 a 3 dias pode ser mais sustentável.' : 'Boa adesão! Mantenha os dias que funcionam para sua rotina.'}</p></div><button class="button small" data-action="checkin">Registrar hoje</button></div></section></div>
+    <section class="panel"><div class="panel-head"><div><h3>Conquistas</h3><p>Marcos da sua consistência</p></div><span class="tag">${earned.filter((badge) => badge.active).length}/${earned.length}</span></div><div class="badges-row">${earned.map((badge) => `<span class="badge ${badge.active ? '' : 'locked'}">${badge.icon} ${badge.name}</span>`).join('')}</div><div class="checkin-banner"><div><h3>Check-in semanal</h3><p>${weeklyCheckins.length < 7 ? `Você registrou ${weeklyCheckins.length} de 7 check-ins nesta semana.` : 'Semana completa. Recuperação também faz parte da consistência.'}</p></div><button class="button small" data-action="checkin">Registrar hoje</button></div></section></div>
     <script type="application/json" id="chartPayload">${JSON.stringify({ labels: weekDays, volume: volumeData, calories: calorieData, weight: weightData }).replace(/</g, '\\u003c')}</script>`;
 }
 
