@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "sourceNote": "Catálogo interno Fat Fit. Ângulos são referências aproximadas de pose 2D, não uma avaliação clínica ou biomecânica completa.",
+  "exercises": [
+    {
+      "id": "squat",
+      "name": "Agachamento livre",
+      "group": "Quadríceps",
+      "equipment": "Barra",
+      "analysisNames": ["agachamento"],
+      "poseStandard": {
+        "joints": ["hip", "knee", "ankle"],
+        "landmarkTriplets": [[23, 25, 27], [24, 26, 28]],
+        "angleJoint": "knee",
+        "targetAngle": 90,
+        "minAcceptableAngle": 102,
+        "adviceCorrect": "Ótima profundidade! A linha do quadril atingiu aproximadamente a altura dos joelhos.",
+        "adviceIncorrect": "A amplitude observada parece reduzida. Ajuste a posição dos pés e desça somente até onde mantenha controle e conforto.",
+        "searchQuery": "execucao+correta+agachamento+livre+pacholok"
+      }
+    },
+    {
+      "id": "bench-press",
+      "name": "Supino reto",
+      "group": "Peito",
+      "equipment": "Barra",
+      "analysisNames": ["supino reto"],
+      "poseStandard": {
+        "joints": ["shoulder", "elbow", "wrist"],
+        "landmarkTriplets": [[11, 13, 15], [12, 14, 16]],
+        "angleJoint": "elbow",
+        "targetAngle": 90,
+        "minAcceptableAngle": 95,
+        "adviceCorrect": "A flexão de cotovelo observada chegou perto da referência de amplitude definida.",
+        "adviceIncorrect": "A amplitude observada parece reduzida. Busque uma descida controlada, sem desconforto e sem projetar os ombros.",
+        "searchQuery": "execucao+correta+supino+reto+pacholok"
+      }
+    },
+    {
+      "id": "overhead-press",
+      "name": "Desenvolvimento com halteres",
+      "group": "Ombros",
+      "equipment": "Halteres",
+      "analysisNames": ["desenvolvimento"],
+      "poseStandard": {
+        "joints": ["shoulder", "elbow", "wrist"],
+        "landmarkTriplets": [[11, 13, 15], [12, 14, 16]],
+        "angleJoint": "elbow",
+        "targetAngle": 90,
+        "minAcceptableAngle": 95,
+        "adviceCorrect": "A amplitude de cotovelo observada chegou perto da referência definida para o desenvolvimento.",
+        "adviceIncorrect": "A amplitude observada parece reduzida. Desça os halteres de forma controlada até uma posição confortável próxima aos ombros.",
+        "searchQuery": "execucao+correta+desenvolvimento+ombros+pacholok"
+      }
+    },
+    { "id": "romanian-deadlift", "name": "Levantamento terra romeno", "group": "Posterior", "equipment": "Barra", "analysisNames": [], "poseStandard": null },
+    { "id": "leg-extension", "name": "Cadeira extensora", "group": "Quadríceps", "equipment": "Máquina", "analysisNames": [], "poseStandard": null },
+    { "id": "hip-thrust", "name": "Hip thrust", "group": "Glúteos", "equipment": "Barra", "analysisNames": [], "poseStandard": null },
+    { "id": "incline-bench-press", "name": "Supino inclinado com halteres", "group": "Peito", "equipment": "Halteres", "analysisNames": [], "poseStandard": null },
+    { "id": "triceps-pushdown", "name": "Tríceps na polia", "group": "Tríceps", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "leg-curl", "name": "Mesa flexora", "group": "Posterior", "equipment": "Máquina", "analysisNames": [], "poseStandard": null },
+    { "id": "lat-pulldown", "name": "Puxada frontal", "group": "Costas", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "seated-row", "name": "Remada baixa", "group": "Costas", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "lateral-raise", "name": "Elevação lateral", "group": "Ombros", "equipment": "Halteres", "analysisNames": [], "poseStandard": null },
+    { "id": "biceps-curl", "name": "Rosca direta", "group": "Bíceps", "equipment": "Barra", "analysisNames": [], "poseStandard": null },
+    { "id": "leg-press", "name": "Leg press", "group": "Quadríceps", "equipment": "Máquina", "analysisNames": [], "poseStandard": null },
+    { "id": "standing-calf-raise", "name": "Panturrilha em pé", "group": "Panturrilhas", "equipment": "Máquina", "analysisNames": [], "poseStandard": null },
+    { "id": "cable-fly", "name": "Crucifixo no cabo", "group": "Peito", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "face-pull", "name": "Face pull", "group": "Ombros", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "cable-crunch", "name": "Abdominal na polia", "group": "Abdômen", "equipment": "Cabo", "analysisNames": [], "poseStandard": null },
+    { "id": "hammer-curl", "name": "Rosca martelo", "group": "Bíceps", "equipment": "Halteres", "analysisNames": [], "poseStandard": null },
+    { "id": "barbell-row", "name": "Remada curvada", "group": "Costas", "equipment": "Barra", "analysisNames": [], "poseStandard": null },
+    { "id": "shoulder-press", "name": "Desenvolvimento com barra", "group": "Ombros", "equipment": "Barra", "analysisNames": ["desenvolvimento"], "poseStandard": {
+      "joints": ["shoulder", "elbow", "wrist"],
+      "landmarkTriplets": [[11, 13, 15], [12, 14, 16]],
+      "angleJoint": "elbow",
+      "targetAngle": 90,
+      "minAcceptableAngle": 95,
+      "adviceCorrect": "A amplitude de cotovelo observada chegou perto da referência definida para o desenvolvimento.",
+      "adviceIncorrect": "A amplitude observada parece reduzida. Desça a barra de forma controlada até uma posição confortável próxima aos ombros.",
+      "searchQuery": "execucao+correta+desenvolvimento+ombros+pacholok"
+    } },
+    { "id": "plank", "name": "Prancha", "group": "Abdômen", "equipment": "Peso corporal", "analysisNames": [], "poseStandard": null }
+  ]
+}

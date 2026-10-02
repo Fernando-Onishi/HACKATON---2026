@@ -34,6 +34,13 @@ export const templates = {
 };
 export const templatePlans = { 'Full Body': ['Full Body'], 'A/B': ['Treino A', 'Treino B'], 'A/B/C': ['Treino A', 'Treino B', 'Treino C'] };
 const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+const trainingGuideIcons = {
+  camera: '<svg class="video-guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  profile: '<svg class="video-guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10" cy="7" r="3"/><path d="M4.5 20c.3-3.2 2.2-5 5.5-5s5.2 1.8 5.5 5M19 5v14"/></svg>',
+  phone: '<svg class="video-guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+  body: '<svg class="video-guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v6m-4 8 1-6-2-3m9 9-1-6 2-3M8 11l4 2 4-2"/></svg>',
+  light: '<svg class="video-guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 18h6m-5 4h4m-5.5-7.5a7 7 0 1 1 7 0c-.9.7-1.5 1.5-1.5 2.5h-5c0-1-.6-1.8-1.5-2.5Z"/></svg>'
+};
 
 function exerciseCatalog() {
   const exercises = new Map();
@@ -48,7 +55,16 @@ function exerciseCatalog() {
       }
     });
   });
-  return [...exercises.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  return [...exercises.values()]
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+    .map((exercise, index) => {
+      const slug = exercise.name.toLocaleLowerCase('pt-BR')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '');
+      return { ...exercise, id: `ex_${slug}_${index}` };
+    });
 }
 
 export function volumeOf(workout) {
@@ -76,6 +92,18 @@ export function renderTraining(state) {
   const completedToday = completedExercises.filter((item) => item.date === today).length;
   return `
     <div class="page-intro"><div><span class="eyebrow">BIBLIOTECA DE MOVIMENTOS</span><h2>Encontre seu exercício</h2><p>Pesquise por nome, grupo muscular ou equipamento e explore as divisões de treino.</p></div><span class="tag">${completedToday} feitos hoje · ${exercises.length} exercícios</span></div>
+    <details class="video-guide panel">
+      <summary class="video-guide-title"><span class="video-guide-heading">${trainingGuideIcons.camera}<span>Como gravar para a IA analisar corretamente (Clique para ver as dicas)</span></span><span class="video-guide-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="video-guide-content">
+        <ul class="video-guide-tips">
+          <li><strong>${trainingGuideIcons.profile}Posição de Perfil (De Lado):</strong> Gravando agachamentos ou pernas? Coloque a câmera exatamente de lado para registrarmos a profundidade real.</li>
+          <li><strong>${trainingGuideIcons.phone}Câmera Fixa:</strong> Apoie o celular em um suporte ou garrafa na altura da cintura. Não segure o celular na mão!</li>
+          <li><strong>${trainingGuideIcons.body}Corpo Inteiro na Tela:</strong> Mantenha de 2 a 3 metros de distância. Garanta que seus pés não saiam do vídeo ao descer.</li>
+          <li><strong>${trainingGuideIcons.light}Boa Iluminação:</strong> Grave em um local claro para que as articulações sejam identificadas sem falhas.</li>
+        </ul>
+        <p class="video-guide-upload-hint">Cada exercício tem seu próprio botão de vídeo e feedback.</p>
+      </div>
+    </details>
     <section class="panel exercise-library">
       <div class="exercise-search-row">
         <label class="exercise-search" for="exerciseSearch"><span aria-hidden="true">⌕</span><input id="exerciseSearch" type="search" placeholder="Buscar exercício, músculo ou equipamento" autocomplete="off"></label>
@@ -91,11 +119,37 @@ export function renderTraining(state) {
         ${exercises.map((exercise) => {
           const doneToday = completedExercises.some((item) => item.name === exercise.name && item.date === today);
           return `
-          <article class="exercise-card catalog-exercise" data-exercise-card data-name="${escapeHTML(exercise.name.toLocaleLowerCase('pt-BR'))}" data-group="${escapeHTML(exercise.group)}" data-search="${escapeHTML(`${exercise.name} ${exercise.group} ${exercise.equipment} ${exercise.substitutes}`.toLocaleLowerCase('pt-BR'))}" data-plans="${escapeHTML(exercise.plans.join('|'))}">
+          <article class="exercise-card catalog-exercise" data-exercise-card data-exercise-id="${escapeHTML(exercise.id)}" data-name="${escapeHTML(exercise.name.toLocaleLowerCase('pt-BR'))}" data-group="${escapeHTML(exercise.group)}" data-search="${escapeHTML(`${exercise.name} ${exercise.group} ${exercise.equipment} ${exercise.substitutes}`.toLocaleLowerCase('pt-BR'))}" data-plans="${escapeHTML(exercise.plans.join('|'))}">
             <div class="exercise-card-head"><div><strong>${escapeHTML(exercise.name)}</strong><small>${escapeHTML(exercise.equipment)}</small></div><span>${escapeHTML(exercise.group)}</span></div>
             <div class="catalog-exercise-details"><span>${exercise.sets} séries</span><span>${exercise.reps} repetições</span></div>
             <p class="catalog-substitutes"><strong>Alternativas:</strong> ${escapeHTML(exercise.substitutes)}</p>
             <button type="button" class="exercise-done-button${doneToday ? ' done' : ''}" data-action="toggle-exercise-done" data-exercise-name="${escapeHTML(exercise.name)}" aria-pressed="${doneToday}">${doneToday ? '✓ Feito hoje' : 'Marcar como feito'}</button>
+            <div class="exercise-video-upload">
+              <input type="file" id="videoInput_${escapeHTML(exercise.id)}" class="video-file-input" data-exercise-id="${escapeHTML(exercise.id)}" data-exercise-type="${escapeHTML(exercise.name)}" accept="video/*" hidden>
+              <button type="button" class="button small video-upload-button" data-action="select-exercise-video" data-exercise-id="${escapeHTML(exercise.id)}" aria-controls="videoInput_${escapeHTML(exercise.id)}">Enviar vídeo deste exercício</button>
+              <p class="video-validation-status" id="videoStatus_${escapeHTML(exercise.id)}" role="status" aria-live="polite">Nenhum vídeo enviado.</p>
+            </div>
+            <div id="videoContainer_${escapeHTML(exercise.id)}" class="video-preview-container hidden">
+              <video id="videoPreview_${escapeHTML(exercise.id)}" controls playsinline preload="metadata" aria-label="Prévia do vídeo de ${escapeHTML(exercise.name)}"></video>
+              <canvas id="poseCanvas_${escapeHTML(exercise.id)}" aria-hidden="true"></canvas>
+            </div>
+            <div id="analysisOutput_${escapeHTML(exercise.id)}" class="analysis-output" aria-live="polite"></div>
+            <div class="video-actions-bar hidden" id="videoActions_${escapeHTML(exercise.id)}" aria-label="Ações do vídeo deste exercício">
+              <div class="video-actions-row">
+                <button type="button" class="btn-action btn-reanalyze" data-action="reanalyze-exercise-video" data-exercise-id="${escapeHTML(exercise.id)}">
+                  <span class="btn-icon" aria-hidden="true">🔄</span>
+                  <span class="btn-text">Reanalisar Vídeo</span>
+                </button>
+                <button type="button" class="btn-action btn-change-video" data-action="change-exercise-video" data-exercise-id="${escapeHTML(exercise.id)}">
+                  <span class="btn-icon" aria-hidden="true">📁</span>
+                  <span class="btn-text">Trocar Vídeo</span>
+                </button>
+              </div>
+              <button type="button" class="btn-action btn-remove-video" data-action="remove-exercise-video" data-exercise-id="${escapeHTML(exercise.id)}">
+                <span class="btn-icon" aria-hidden="true">🗑️</span>
+                <span class="btn-text">Remover Vídeo</span>
+              </button>
+            </div>
             <a class="catalog-video-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(`${exercise.name} execução correta`)}" target="_blank" rel="noopener noreferrer">Pesquisar execução <span aria-hidden="true">↗</span></a>
           </article>
         `;

@@ -16,42 +16,43 @@ Acesse `http://localhost:8000`. Abrir `index.html` diretamente via `file://` nã
 
 - `index.html`: shell da SPA e navegação responsiva.
 - `css/style.css`: tokens visuais, componentes e estilos mobile-first.
-- `js/app.js`: navegação por hash, estado compartilhado, validações, renderização e localStorage.
-- `js/treino.js`: templates, registro de exercícios, cálculo de volume e progressão.
+- `js/app.js`: navegação por hash, estado compartilhado, validações, renderização e integração de conta.
+- `js/chatbot.js`: perguntas e respostas prontas, escolhidas localmente por assunto, sem API de IA.
+- `js/firebase.js`: inicialização do Firebase, Analytics e acesso ao Firestore.
+- `js/treino.js`: divisões e catálogo de exercícios, conclusão de movimentos e análise de vídeo.
+- `js/storageManager.js`: persistência dos vídeos individuais em IndexedDB.
+- `js/poseAnalyzer.js`: carregamento MediaPipe Pose, amostragem de vídeo, avaliação angular e persistência/restauração dos resultados diários.
+- `data/alimentos.json`: catálogo nutricional educativo com valores aproximados por 100 g.
+- `data/exercicios.json`: catálogo de exercícios e parâmetros de análise de pose disponíveis.
 - `js/dieta.js`: diário alimentar, balanço calórico e sugestões educativas.
 - `js/insights.js`: análises cruzadas, conquistas e gráficos Chart.js.
 
 ## Dados e integração
 
-Os registros ficam no `localStorage` do navegador. A aplicação inclui dados demonstrativos iniciais e permite restaurá-los no perfil. Para ativar Auth e sincronização, informe no perfil a URL do projeto Supabase e sua chave pública `anon`, crie uma conta ou entre. A aplicação sincroniza uma linha por usuário na tabela `fatfit_state`; políticas RLS devem estar ativas antes de guardar dados pessoais:
+O Firebase Auth gerencia cadastro e sessão, e cada conta sincroniza seus registros no documento `users/{uid}` do Cloud Firestore. Os dados do app também ficam em um cache `localStorage` separado por UID para continuar disponíveis após logout/relogin; e-mail e senha não são armazenados nesse cache. O Firestore continua sendo a fonte de sincronização entre dispositivos. Para ativar a integração no projeto Firebase:
 
-```sql
-create table public.fatfit_state (
-	user_id uuid primary key references auth.users(id) on delete cascade,
-	state jsonb not null,
-	updated_at timestamptz not null default now()
-);
+1. Ative o provedor **E-mail/senha** em Authentication > Sign-in method.
+2. Crie o banco Cloud Firestore padrão, `(default)`, no mesmo projeto.
+3. Publique estas regras antes de usar dados pessoais:
 
-alter table public.fatfit_state enable row level security;
-grant select, insert, update on public.fatfit_state to authenticated;
-
-create policy "Users can read their own Fat Fit state"
-on public.fatfit_state for select to authenticated
-using ((select auth.uid()) = user_id);
-
-create policy "Users can insert their own Fat Fit state"
-on public.fatfit_state for insert to authenticated
-with check ((select auth.uid()) = user_id);
-
-create policy "Users can update their own Fat Fit state"
-on public.fatfit_state for update to authenticated
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
+```javascript
+rules_version = '2';
+service cloud.firestore {
+	match /databases/{database}/documents {
+		match /users/{userId} {
+			allow read, write: if request.auth != null && request.auth.uid == userId;
+		}
+	}
+}
 ```
 
-Para habilitar sugestões remotas, configure no perfil a URL de uma Supabase Edge Function que aceite `POST` e retorne JSON com `suggestions: [{ meal, idea, note }]`. A função de borda deve validar a entrada e manter a chave do provedor de IA somente no servidor. O cliente aceita apenas a chave pública `anon`, que não é uma chave secreta.
+Contas antigas que existiam apenas no `localStorage` precisam ser cadastradas no Firebase. Dados de `fatfit-state-v1` são importados automaticamente quando o e-mail legado corresponde e ainda não há estado na nuvem. Se o proprietário não puder ser verificado ou já houver dados na nuvem, o app pede confirmação antes da importação/substituição; a cópia local só é removida após sincronização. Senhas antigas não são migradas. Se uma gravação falhar, uma cópia temporária pendente fica neste navegador por UID e é removida após sincronizar com o Firestore.
 
-Sem endpoint configurado, as sugestões usam uma lista local educativa. Não são prescrições médicas ou nutricionais. O gasto calórico de treino é uma estimativa demonstrativa e não deve ser interpretado como medição fisiológica.
+O coach e as sugestões alimentares não usam API de IA nem fazem requisições para gerar texto. `js/chatbot.js` contém perguntas rápidas e respostas prontas selecionadas por assunto; `js/dieta.js` contém um catálogo local de refeições com porções, calorias e macronutrientes aproximados. O cardápio usa a meta estimada e a preferência alimentar informadas no perfil.
+
+Porções e calorias são aproximações: variam conforme marca, preparo e alimento utilizado. O plano é educativo, não é prescrição médica ou nutricional. Em caso de condição clínica, gestação, histórico de transtorno alimentar ou menoridade, procure orientação profissional. O gasto calórico de treino também é uma estimativa demonstrativa.
+
+Os vídeos de cada exercício ficam no IndexedDB deste navegador; o feedback do dia fica no `localStorage`. Camera Utils e MediaPipe Pose são carregados antes do app pela CDN jsDelivr. A análise amostra quadros com limites de tempo para leitura e inferência e aplica os parâmetros em `data/exercicios.json`. Apenas os movimentos com critérios cadastrados recebem feedback; os outros não são pontuados. As medidas são estimativas 2D em uma única vista, não garantem avaliação completa da técnica e não substituem orientação profissional. A análise de pose não estima calorias, portanto não adiciona gasto calórico ao balanço. No registro de refeições, o alimento deve ser selecionado de `data/alimentos.json`; calorias e macronutrientes são calculados pela quantidade registrada e não podem ser editados manualmente. Itens fora da tabela direcionam para o Agente Nutri-IA no Gemini. As sugestões prontas de cardápio continuam sendo estimativas educativas; o balanço diário usa as refeições registradas e os gastos de treino informados.
 
 ## Regras principais
 
