@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0c">
+    <meta name="description" content="Fat Fit: acompanhe seus treinos, alimentacao e evolucao em um so lugar.">
+    <title>Fat Fit | Seu ritmo. Sua evolução.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+    <script type="module" src="js/app.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="Navegação principal">
+            <a class="brand" href="#dashboard" aria-label="Fat Fit, início"><span class="brand-mark">F</span><span>FAT<span class="brand-light">FIT</span><small>PERFORMANCE CLUB</small></span></a>
+            <div class="side-label">MENU PRINCIPAL</div>
+            <nav class="side-nav" id="desktopNav">
+                <a href="#dashboard" data-route="dashboard"><span class="nav-icon">◫</span>Visão geral</a>
+                <a href="#treinos" data-route="treinos"><span class="nav-icon">↗</span>Treinos</a>
+                <a href="#dieta" data-route="dieta"><span class="nav-icon">◉</span>Alimentação</a>
+                <a href="#insights" data-route="insights"><span class="nav-icon">⌁</span>Insights</a>
+            </nav>
+            <div class="side-bottom">
+                <div class="weekly-card"><span class="eyebrow">CHECK-IN DA SEMANA</span><strong id="weeklyCount">0 <small>/ 5 dias</small></strong><div class="mini-progress"><span id="weeklyProgress"></span></div><p id="weeklyPrompt">Seu próximo treino começa com um passo.</p><button class="text-button" data-action="checkin">+ Registrar treino de hoje</button></div>
+                <a class="profile-link" href="#perfil" data-route="perfil"><span class="avatar" id="sideAvatar">A</span><span><strong id="sideName">Atleta Fat Fit</strong><small>Meu perfil</small></span><span class="profile-arrow">›</span></a>
+            </div>
+        </aside>
+        <main class="main-area">
+            <header class="topbar">
+                <div><span class="eyebrow" id="topEyebrow"></span><h1 id="pageTitle">Visão geral</h1></div>
+                <div class="topbar-actions"><span class="sync-status" id="syncStatus"><i></i> Dados salvos neste dispositivo</span><button class="icon-button" id="profileShortcut" aria-label="Abrir perfil" title="Abrir perfil">◎</button></div>
+            </header>
+            <div class="page-content" id="viewRoot" aria-live="polite"></div>
+            <footer class="app-footer"><span>FAT FIT <b>·</b> PERFORMANCE CLUB</span><span>Consistência é construída um dia por vez.</span></footer>
+        </main>
+    </div>
+    <nav class="mobile-nav" aria-label="Navegação móvel" id="mobileNav">
+        <a href="#dashboard" data-route="dashboard"><span>◫</span>Início</a><a href="#treinos" data-route="treinos"><span>↗</span>Treinos</a><a href="#dieta" data-route="dieta"><span>◉</span>Dieta</a><a href="#insights" data-route="insights"><span>⌁</span>Insights</a><a href="#perfil" data-route="perfil"><span>◎</span>Perfil</a>
+    </nav>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
