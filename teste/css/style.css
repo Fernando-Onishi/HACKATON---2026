@@ -92,6 +92,12 @@ button { color: inherit; }
 .theme-toggle { align-items: center; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; color: var(--white); cursor: pointer; display: inline-flex; font-size: 11px; font-weight: 600; gap: 7px; min-height: 38px; padding: 0 11px; transition: background-color .3s ease, border-color .2s, color .3s ease; }
 .theme-toggle:hover { border-color: var(--red); }
 .theme-toggle-icon { font-size: 15px; line-height: 1; }
+.theme-toggle { gap: 8px; min-height: 38px; padding: 0 11px; }
+.theme-toggle-icon { align-items: center; display: inline-flex; justify-content: center; }
+.theme-toggle-icon svg { display: block; fill: none; height: 16px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; width: 16px; }
+.brand-wrap { justify-content: space-between; }
+.brand-lockup .brand-text { font: 800 24px/1 var(--heading); }
+.auth-theme-toggle { flex: 0 0 auto; }
 .page-content { margin: 0 auto; max-width: 1440px; min-height: calc(100vh - 146px); padding: 27px clamp(24px, 4vw, 60px) 48px; }
 .app-footer { border-top: 1px solid #ffffff0b; color: #777783; display: flex; font-size: 10px; justify-content: space-between; letter-spacing: .3px; padding: 19px clamp(24px, 4vw, 60px); }
 .app-footer span:first-child { font: 700 9px var(--heading); letter-spacing: 0; }
@@ -415,6 +421,30 @@ body.auth-mode .app-shell {
 [data-theme="light"] .mobile-nav { background: rgb(255 255 255 / 96%); border-top-color: var(--border-color); }
 [data-theme="light"] .mobile-nav a { color: #5e6475; }
 [data-theme="light"] .theme-toggle { box-shadow: var(--shadow); }
+[data-theme="light"] .auth-brand-panel {
+  background-image: linear-gradient(120deg, rgba(255,255,255,.84), rgba(248,249,252,.7)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1300&q=80');
+  border-color: var(--border-color);
+  box-shadow: var(--shadow);
+  color: var(--text-main);
+}
+[data-theme="light"] .auth-brand-panel .brand-text,
+[data-theme="light"] .auth-brand-panel .auth-copy h2,
+[data-theme="light"] .auth-brand-panel .auth-copy p,
+[data-theme="light"] .auth-brand-panel .auth-metrics strong { color: var(--text-main); }
+[data-theme="light"] .auth-brand-panel small,
+[data-theme="light"] .auth-brand-panel .auth-metrics span { color: var(--text-muted); opacity: 1; }
+[data-theme="light"] .auth-brand-panel .auth-metrics div { background: #ffffffd9; border-color: var(--border-color); }
+[data-theme="light"] .auth-card {
+  background: linear-gradient(180deg, #fff, #f7f8fa);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow);
+  color: var(--text-main);
+}
+[data-theme="light"] .auth-tab { background: var(--bg-card); border-color: var(--border-color); color: var(--text-muted); }
+[data-theme="light"] .auth-tab.active { background: #a62c3514; border-color: #a62c3555; color: #79232b; }
+[data-theme="light"] .auth-card .field label { color: #404655; }
+[data-theme="light"] .auth-card .form-hint { color: var(--text-muted); }
+[data-theme="light"] .auth-theme-toggle { background: #ffffffed; border-color: var(--border-color); color: var(--text-main); }
 @media (max-width: 760px) {
   .theme-toggle { min-height: 34px; padding: 0 8px; }
   .theme-toggle-label { font-size: 10px; }
