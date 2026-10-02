@@ -3,25 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0a0c">
+    <meta name="theme-color" content="#121318">
     <meta name="description" content="Fat Fit: acompanhe seus treinos, alimentacao e evolucao em um so lugar.">
     <title>FatFit PC</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-      try {
-        const savedTheme = localStorage.getItem('fatfit-theme');
-        if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
-      } catch {
-        document.documentElement.dataset.theme = 'dark';
-      }
-    </script>
-    <link rel="stylesheet" href="css/style.css?v=clear-dark-toggle-v2">
+    <link rel="stylesheet" href="css/style.css?v=dark-only-v1">
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
-    <script type="module" src="js/app.js?v=clear-dark-toggle-v2"></script>
+    <script type="module" src="js/app.js?v=dark-only-v1"></script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e50914'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='sans-serif' font-size='46' font-weight='700' fill='white'%3EF%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -44,7 +36,7 @@
         <main class="main-area">
             <header class="topbar">
                 <div><span class="eyebrow" id="topEyebrow"></span><h1 id="pageTitle">Visão geral</h1></div>
-                <div class="topbar-actions"><span class="sync-status" id="syncStatus"><i></i> Sincronizando com Firebase</span><button class="theme-toggle" data-action="toggle-theme" type="button" aria-label="Ativar modo claro" title="Ativar modo claro"><span class="theme-toggle-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span><span class="theme-toggle-label">Modo claro</span></button><button class="icon-button" id="profileShortcut" aria-label="Abrir perfil" title="Abrir perfil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/></svg></button></div>
+                <div class="topbar-actions"><span class="sync-status" id="syncStatus"><i></i> Sincronizando com Firebase</span><button class="icon-button" id="profileShortcut" aria-label="Abrir perfil" title="Abrir perfil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/></svg></button></div>
             </header>
             <div class="page-content" id="viewRoot" aria-live="polite">
                 <section class="startup-state" role="status">
